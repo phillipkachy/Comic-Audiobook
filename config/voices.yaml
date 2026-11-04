@@ -23,7 +23,7 @@ voices:
 
   GAMBIT:
     origin: designed
-    voice_id: null   # set after Phillip picks a Voice Design preview
+    voice_id: pbSvbOnrDaVEFrmjEQ9E   # "PhillZeno - Gambit", Voice Design take 1
     design_prompt: >
       Man in his early 30s, smooth low baritone with a slight rasp, relaxed Louisiana
       Cajun accent. Unhurried and charming, with a sly smile in the voice. Playful
