@@ -60,3 +60,7 @@ Delivery hints in parentheses are passed to the voice model as direction (inline
 - Requires ffmpeg, Python 3.10+, `pip install -r requirements.txt`.
 - Generated clips are cached in `.cache/` by content, so re-runs only pay for changed lines.
 - Tests: `python -m unittest discover tests` (mock only, no credits).
+
+## Git
+- Repo: `phillipkachy/Comic-Audiobook`. Commit and push straight to `main` (Phillip's choice — no feature branches/PRs).
+- Never commit panels, renders (`mix.mp3`, `rough_cut.mp4`), `build/`, `.cache/` or API keys.
