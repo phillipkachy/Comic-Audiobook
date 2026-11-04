@@ -21,6 +21,15 @@ voices:
       a little wry humour, late-night radio intimacy. Neutral North American accent.
     settings: {stability: 0.5, similarity_boost: 0.75, style: 0.2}
 
+  GAMBIT:
+    origin: designed
+    voice_id: null   # set after Phillip picks a Voice Design preview
+    design_prompt: >
+      Man in his early 30s, smooth low baritone with a slight rasp, relaxed Louisiana
+      Cajun accent. Unhurried and charming, with a sly smile in the voice. Playful
+      confidence that turns quiet and serious when it counts.
+    settings: {stability: 0.4, similarity_boost: 0.75, style: 0.5}
+
   # Example character entry (fill in when the episode needs it):
   # ROGUE:
   #   origin: designed
