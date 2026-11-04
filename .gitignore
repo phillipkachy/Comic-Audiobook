@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.env
+.cache/
+# Panels are Phillip's own copies — keep them local, never commit or redistribute.
+episodes/*/panels/*
+!episodes/*/panels/.gitkeep
+# Build outputs
+episodes/*/build/
+episodes/*/mix.mp3
+episodes/*/rough_cut.mp4

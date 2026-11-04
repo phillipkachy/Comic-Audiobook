@@ -1,0 +1,12 @@
+# Music cues used by [MUSIC <name>]. If assets/music/<name>.mp3 exists it is used;
+# otherwise the prompt below is sent to ElevenLabs music generation (real runs only).
+# [MUSIC none] / [MUSIC stop] fades the bed out.
+music:
+  tense_build: >
+    Instrumental, no vocals. Slow-building tension underscore, low strings ostinato,
+    soft pulsing synth, sparse percussion, 80 bpm, cinematic, leaves room for narration.
+  calm_reflective: >
+    Instrumental, no vocals. Gentle reflective piano and warm pads, 70 bpm, understated.
+  action_drive: >
+    Instrumental, no vocals. Driving action underscore, taiko and staccato strings,
+    120 bpm, energetic but mixed low enough to sit under a voice.

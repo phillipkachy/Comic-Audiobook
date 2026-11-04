@@ -1,0 +1,30 @@
+# Voice roster. ONLY original designed voices (ElevenLabs Voice Design) are allowed.
+# Never clone or imitate a real person — no actors from animated series, games or films,
+# no "sounds like ..." prompts. run.py refuses any voice whose origin is not "designed".
+#
+# To add a character: design a voice from a description of the *character* (age, texture,
+# energy, accent), save it, paste its voice_id here. voice_id may stay null for --mock runs.
+
+defaults:
+  model_id: eleven_v3          # v3 accepts inline delivery direction, e.g. "(teasing)"
+  line_gap: 0.35               # seconds of air after each spoken line
+  music_volume: 0.35           # bed level before ducking under speech
+  max_character_share: 0.15    # character lines must stay under this share of spoken words
+  max_quote_words: 20          # warn when a single character line is longer than this
+
+voices:
+  NARRATOR:
+    origin: designed
+    voice_id: null
+    design_prompt: >
+      Warm, grounded adult storyteller, mid-30s, low-medium pitch, clear diction,
+      a little wry humour, late-night radio intimacy. Neutral North American accent.
+    settings: {stability: 0.5, similarity_boost: 0.75, style: 0.2}
+
+  # Example character entry (fill in when the episode needs it):
+  # ROGUE:
+  #   origin: designed
+  #   voice_id: null
+  #   design_prompt: >
+  #     Young adult woman, Southern US drawl, playful and guarded, husky edge, confident.
+  #   settings: {stability: 0.4, similarity_boost: 0.75, style: 0.45}
