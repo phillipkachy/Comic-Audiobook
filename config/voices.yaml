@@ -15,7 +15,7 @@ defaults:
 voices:
   NARRATOR:
     origin: designed
-    voice_id: null
+    voice_id: KGmOvwFDbpM5qSFaQ4T0   # "PhillZeno - Narrator", Voice Design take 3
     design_prompt: >
       Warm, grounded adult storyteller, mid-30s, low-medium pitch, clear diction,
       a little wry humour, late-night radio intimacy. Neutral North American accent.
