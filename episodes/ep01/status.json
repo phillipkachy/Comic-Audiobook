@@ -13,8 +13,15 @@
       "at": "2026-11-15T02:51:19+00:00"
     },
     "script": {
-      "state": "pending",
-      "history": []
+      "state": "approved",
+      "history": [
+        {
+          "action": "approve",
+          "at": "2026-11-15T06:02:03+00:00"
+        }
+      ],
+      "hash": "1f40845a96ff44b08da28fd9e7ab6e87f106de0ac3af78e3ae5fee1286d30552",
+      "at": "2026-11-15T06:02:03+00:00"
     },
     "audio": {
       "state": "pending",
@@ -29,5 +36,25 @@
       "history": []
     }
   },
-  "builds": {}
+  "builds": {
+    "audio": {
+      "mock": true,
+      "runtime_sec": 626.2,
+      "runtime": "10:26",
+      "character_lines": 10,
+      "character_runtime_share": 0.041,
+      "character_spoken_share": 0.043,
+      "new_tts_characters": 0,
+      "api_calls": 0,
+      "dropped_delivery_hints": 0,
+      "music_cues": [
+        "action_drive",
+        "calm_reflective",
+        "mystery_reveal",
+        "playful_banter",
+        "tense_build"
+      ],
+      "at": "2026-11-15T06:02:36+00:00"
+    }
+  }
 }
