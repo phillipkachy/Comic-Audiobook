@@ -11,6 +11,11 @@ defaults:
   music_volume: 0.35           # bed level before ducking under speech
   max_character_share: 0.15    # character lines must stay under this share of spoken words
   max_quote_words: 20          # warn when a single character line is longer than this
+  # $0 policy: never pay for anything. Music and SFX come from free libraries as files in
+  # assets/; the API is used only for voices, within the Free plan's monthly credits.
+  generate_music: false
+  generate_sfx: false
+  tts_char_budget: 9000        # stop before rendering if a run needs more new characters than this
 
 voices:
   NARRATOR:

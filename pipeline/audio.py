@@ -17,6 +17,12 @@ def _key(*parts) -> str:
     return hashlib.sha256(json.dumps(parts, sort_keys=True).encode()).hexdigest()[:16]
 
 
+def _tts_args(ev, v: dict, model_default: str):
+    model = v.get("model_id", model_default)
+    text = f"[{ev.hint}] {ev.text}" if ev.hint and model in AUDIO_TAG_MODELS else ev.text
+    return text, model, v.get("settings") or {}
+
+
 def build(ep_dir: Path, root: Path, voices_cfg: dict, cues: dict, mock: bool, log=print) -> dict:
     media.need_ffmpeg()
     script = parse(ep_dir / "script.md")
@@ -33,13 +39,43 @@ def build(ep_dir: Path, root: Path, voices_cfg: dict, cues: dict, mock: bool, lo
         missing = sorted({e.speaker for e in script.events if e.kind == "line" and not voices[e.speaker].get("voice_id")})
         if missing:
             raise ApiStop(f"no voice_id set in config/voices.yaml for: {', '.join(missing)}")
-    client = None if mock else Client()
-
     build_dir = ep_dir / "build"
     cache = root / ".cache" / ("mock" if mock else "eleven")
     work = build_dir / "work"
     for d in (build_dir, cache, work):
         d.mkdir(parents=True, exist_ok=True)
+
+    if not mock:
+        # Zero-spend preflight: everything is checked BEFORE the first API call.
+        problems = []
+        if not defaults.get("generate_sfx", False):
+            need = sorted({str(e.value) for e in script.events if e.kind == "sfx"
+                           and not (root / "assets" / "sfx" / f"{e.value}.mp3").is_file()})
+            if need:
+                problems.append("missing SFX files (generation is off): "
+                                + ", ".join(f"assets/sfx/{n}.mp3" for n in need))
+        if not defaults.get("generate_music", False):
+            need = sorted({str(e.value) for e in script.events if e.kind == "music"
+                           and str(e.value).lower() not in MUSIC_STOP
+                           and not (root / "assets" / "music" / f"{e.value}.mp3").is_file()})
+            if need:
+                problems.append("missing music files (generation is off): "
+                                + ", ".join(f"assets/music/{n}.mp3" for n in need))
+        pending = 0
+        for e in script.events:
+            if e.kind == "line":
+                v = voices[e.speaker]
+                text, model, settings = _tts_args(e, v, model_default)
+                if not (cache / f"tts_{_key(v['voice_id'], model, text, settings)}.mp3").exists():
+                    pending += len(text)
+        budget = int(defaults.get("tts_char_budget", 0) or 0)
+        if budget and pending > budget:
+            problems.append(f"{pending} new TTS characters exceeds tts_char_budget ({budget}); "
+                            f"wait for free credits to reset or raise the budget deliberately")
+        if problems:
+            raise ApiStop("preflight failed, nothing was sent to the API:\n  " + "\n  ".join(problems))
+        log(f"  preflight ok: {pending} new TTS characters to render")
+    client = None if mock else Client()
 
     parts: list[Path] = []
     timeline: list[dict] = []
@@ -94,14 +130,9 @@ def build(ep_dir: Path, root: Path, voices_cfg: dict, cues: dict, mock: bool, lo
             add(src, "sfx", text=ev.text, line=ev.lineno)
         elif ev.kind == "line":
             v = voices[ev.speaker]
-            model = v.get("model_id", model_default)
-            text = ev.text
-            if ev.hint:
-                if model in AUDIO_TAG_MODELS:
-                    text = f"[{ev.hint}] {text}"
-                else:
-                    dropped_hints += 1
-            settings = v.get("settings") or {}
+            text, model, settings = _tts_args(ev, v, model_default)
+            if ev.hint and model not in AUDIO_TAG_MODELS:
+                dropped_hints += 1
             if mock:
                 src = cache / f"tts_{_key(ev.speaker, text)}.wav"
                 if not src.exists():

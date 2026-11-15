@@ -105,12 +105,11 @@ def lint(script: Script, voices: dict, ep_dir: Path, assets: Path, cues: dict,
             if not (panels_dir / str(ev.value)).is_file():
                 errors.append(f"line {ev.lineno}: panel {ev.value} not found in {panels_dir}")
         elif ev.kind == "music" and str(ev.value).lower() not in MUSIC_STOP:
-            if not (assets / "music" / f"{ev.value}.mp3").is_file() and ev.value not in cues.get("music", {}):
-                errors.append(f"line {ev.lineno}: music cue '{ev.value}' has no assets/music/{ev.value}.mp3 "
-                              f"and no prompt in config/cues.yaml")
+            if not (assets / "music" / f"{ev.value}.mp3").is_file():
+                warnings.append(f"line {ev.lineno}: music cue '{ev.value}' needs assets/music/{ev.value}.mp3")
         elif ev.kind == "sfx":
             if not (assets / "sfx" / f"{ev.value}.mp3").is_file():
-                warnings.append(f"line {ev.lineno}: SFX '{ev.value}' not in assets/sfx — will be generated")
+                warnings.append(f"line {ev.lineno}: SFX '{ev.value}' needs assets/sfx/{ev.value}.mp3")
     if not seen_panel:
         warnings.append("no [PANEL] directives — visuals stage will have nothing to show")
     total = narr_words + char_words

@@ -14,7 +14,11 @@ the stages below, stop at every approval gate, and never skip one.
    Never download comic scans from the web. Panels are git-ignored — never commit them.
 4. **Disclose AI voices** in the YouTube upload (altered/synthetic content toggle) and in the
    description. `approve package` refuses a package.md without the disclosure.
-5. **Never spend credits on a retry loop.** Each API call gets at most two attempts, then the
+5. **$0 spend, always.** Phillip pays for nothing until the channel earns. Music and SFX are free-library
+   files Phillip drops into `assets/` (never generated; `generate_music`/`generate_sfx` stay false).
+   The API is used only for voices, within the ElevenLabs Free plan's monthly credits
+   (`tts_char_budget`). Never suggest a paid plan, paid asset or paid tool as the default.
+6. **Never spend credits on a retry loop.** Each API call gets at most two attempts, then the
    stage stops (exit code 3). Report it to Phillip — do not re-run blindly.
 
 ## Stages and gates
@@ -46,10 +50,10 @@ you need ("Script for ep01 is ready — 9 min read, 14 character lines. Approve?
 # Episode title
 
 [PANEL p001.jpg]                  <- switch on-screen panel (file in panels/)
-[MUSIC tense_build]               <- start/switch music cue (assets/music/<name>.mp3 or config/cues.yaml prompt)
+[MUSIC tense_build]               <- start/switch music cue (assets/music/<name>.mp3; config/cues.yaml describes the mood)
 NARRATOR: Our-own-words retelling...
 ROGUE (teasing): Short key line.  <- speaker must exist in config/voices.yaml
-SFX: card shuffle, crisp          <- assets/sfx/<slug>.mp3 (slug = text before first comma) or generated
+SFX: card shuffle, crisp          <- assets/sfx/<slug>.mp3 (slug = text before first comma)
 [PAUSE 0.8]                       <- silence in seconds
 [MUSIC none]                      <- fade music out
 ```

@@ -31,9 +31,6 @@ class PipelineTest(unittest.TestCase):
         for item in ("run.py", "pipeline", "config", "templates", "assets"):
             src = REPO / item
             (shutil.copytree if src.is_dir() else shutil.copy)(src, self.tmp / item)
-        voices = (self.tmp / "config" / "voices.yaml").read_text()
-        voices += "  ROGUE:\n    origin: designed\n    voice_id: null\n"
-        (self.tmp / "config" / "voices.yaml").write_text(voices)
 
     def tearDown(self):
         shutil.rmtree(self.tmp)
@@ -86,12 +83,28 @@ class PipelineTest(unittest.TestCase):
     def test_lint_rules(self):
         self.run_cli("init")
         ep = self.tmp / "episodes" / "ep01"
-        (ep / "script.md").write_text("# T\n[PANEL missing.jpg]\nNARRATOR: short.\nROGUE: " + "word " * 30 + "\nGAMBIT: hi\n")
+        (ep / "script.md").write_text("# T\n[PANEL missing.jpg]\nNARRATOR: short.\nROGUE: " + "word " * 30 + "\nMAGNETO: hi\n")
         r = self.run_cli("lint", ok=False)
         self.assertIn("panel missing.jpg not found", r.stdout)
-        self.assertIn("GAMBIT is not in config/voices.yaml", r.stdout)
+        self.assertIn("MAGNETO is not in config/voices.yaml", r.stdout)
         self.assertIn("character lines are", r.stdout)
         self.assertIn("keep character lines short", r.stdout)
+
+    def test_zero_spend_preflight(self):
+        # With voices set but no music/SFX files, a real run must stop before any API call.
+        p = self.tmp / "config" / "voices.yaml"
+        p.write_text(p.read_text().replace("voice_id: null", "voice_id: dummy"))
+        self.run_cli("init")
+        ep = self.tmp / "episodes" / "ep01"
+        (ep / "outline.md").write_text("# o\n")
+        (ep / "script.md").write_text("# T\n[MUSIC tense_build]\nNARRATOR: " + "word " * 40 + "\nSFX: door slam\n")
+        self.run_cli("approve", "outline")
+        self.run_cli("approve", "script")
+        r = self.run_cli("audio", ok=False)
+        self.assertEqual(r.returncode, 3, r.stderr)
+        self.assertIn("nothing was sent to the API", r.stderr)
+        self.assertIn("assets/sfx/door_slam.mp3", r.stderr)
+        self.assertIn("assets/music/tense_build.mp3", r.stderr)
 
     def test_rejects_non_designed_voice(self):
         p = self.tmp / "config" / "voices.yaml"

@@ -1,5 +1,5 @@
-# Music cues used by [MUSIC <name>]. If assets/music/<name>.mp3 exists it is used;
-# otherwise the prompt below is sent to ElevenLabs music generation (real runs only).
+# Music cues used by [MUSIC <name>]. Each needs a free-library file at assets/music/<name>.mp3
+# ($0 policy: music generation is off). The descriptions below are what to look for when picking a track.
 # [MUSIC none] / [MUSIC stop] fades the bed out.
 music:
   tense_build: >
