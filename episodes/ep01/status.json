@@ -1,0 +1,26 @@
+{
+  "episode": "ep01",
+  "gates": {
+    "outline": {
+      "state": "pending",
+      "history": []
+    },
+    "script": {
+      "state": "pending",
+      "history": []
+    },
+    "audio": {
+      "state": "pending",
+      "history": []
+    },
+    "cut": {
+      "state": "pending",
+      "history": []
+    },
+    "package": {
+      "state": "pending",
+      "history": []
+    }
+  },
+  "builds": {}
+}
