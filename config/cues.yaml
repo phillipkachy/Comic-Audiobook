@@ -10,3 +10,9 @@ music:
   action_drive: >
     Instrumental, no vocals. Driving action underscore, taiko and staccato strings,
     120 bpm, energetic but mixed low enough to sit under a voice.
+  playful_banter: >
+    Instrumental, no vocals. Light, mischievous pizzicato strings and muted brass,
+    bouncy 100 bpm, comedic but warm, sits low under dialogue.
+  mystery_reveal: >
+    Instrumental, no vocals. Shimmering ethereal pads and a slow celesta motif,
+    sense of wonder and unease, 60 bpm, builds gently then holds.

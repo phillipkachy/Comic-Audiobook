@@ -2,8 +2,15 @@
   "episode": "ep01",
   "gates": {
     "outline": {
-      "state": "pending",
-      "history": []
+      "state": "approved",
+      "history": [
+        {
+          "action": "approve",
+          "at": "2026-11-15T02:51:19+00:00"
+        }
+      ],
+      "hash": "c76b36b5a253568b81b1bf17902a2da3abadca6548abe2c1b12aaed71869d2b9",
+      "at": "2026-11-15T02:51:19+00:00"
     },
     "script": {
       "state": "pending",

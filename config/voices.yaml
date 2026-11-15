@@ -30,10 +30,18 @@ voices:
       confidence that turns quiet and serious when it counts.
     settings: {stability: 0.4, similarity_boost: 0.75, style: 0.5}
 
-  # Example character entry (fill in when the episode needs it):
-  # ROGUE:
-  #   origin: designed
-  #   voice_id: null
-  #   design_prompt: >
-  #     Young adult woman, Southern US drawl, playful and guarded, husky edge, confident.
-  #   settings: {stability: 0.4, similarity_boost: 0.75, style: 0.45}
+  ROGUE:
+    origin: designed
+    voice_id: null   # to design after ep01 script approval
+    design_prompt: >
+      Woman in her late 20s, warm Southern US (Mississippi) accent, husky alto, confident and
+      quick-witted, a teasing edge that can turn steely and commanding in an instant.
+    settings: {stability: 0.4, similarity_boost: 0.75, style: 0.45}
+
+  DEADPOOL:
+    origin: designed
+    voice_id: null   # to design after ep01 script approval; original voice, not modelled on any actor
+    design_prompt: >
+      Man in his 30s, fast and motor-mouthed, slightly muffled as if speaking through a mask,
+      bright mid-range tenor, gleefully self-amused, comic timing, General American accent.
+    settings: {stability: 0.35, similarity_boost: 0.75, style: 0.6}
