@@ -4,7 +4,7 @@
   python run.py <ep> init                      create episodes/<ep>/ from templates
   python run.py <ep> status                    where the episode stands + next step
   python run.py <ep> lint                      check script.md against the rules
-  python run.py <ep> audio [--mock]            script.md -> mix.mp3      (needs: script approved)
+  python run.py <ep> audio [--mock] [--voice-only]   script.md -> mix.mp3 (needs: script approved)
   python run.py <ep> visuals [--mock]          mix + panels -> rough_cut.mp4 (needs: audio approved)
   python run.py <ep> approve <gate>            gates: outline script audio cut package
   python run.py <ep> reject <gate> "notes"
@@ -38,8 +38,8 @@ def load_voices() -> dict:
     voices = {k.upper(): (v or {}) for k, v in (cfg.get("voices") or {}).items()}
     for name, v in voices.items():
         # Hard rule: only original designed voices. No clones, no sound-alikes of real people.
-        if v.get("origin") != "designed":
-            raise Fail(f"voice {name}: origin must be 'designed' (cloned / imitation voices are not allowed)")
+        if v.get("origin") not in ("designed", "stock"):
+            raise Fail(f"voice {name}: origin must be 'designed' or 'stock' (cloned / imitation voices are not allowed)")
     if "NARRATOR" not in voices:
         raise Fail("config/voices.yaml must define NARRATOR")
     return {"defaults": cfg.get("defaults") or {}, "voices": voices}
@@ -103,7 +103,7 @@ def cmd_status(ep: str) -> None:
     print(f"Next: {st.next_step().replace('<ep>', ep)}")
 
 
-def cmd_stage(ep: str, stage: str, mock: bool) -> None:
+def cmd_stage(ep: str, stage: str, mock: bool, skip_missing: bool = False) -> None:
     d = ep_path(ep)
     st = Status(d)
     st.require(STAGE_PREREQ[stage])
@@ -111,7 +111,7 @@ def cmd_stage(ep: str, stage: str, mock: bool) -> None:
         rep = do_lint(d, quiet=True)
         if not rep.ok:
             raise Fail("script failed lint — fix before generating audio")
-        info = audio.build(d, ROOT, load_voices(), load_cues(), mock)
+        info = audio.build(d, ROOT, load_voices(), load_cues(), mock, skip_missing=skip_missing)
         st.record_build("audio", info)
         st.save()
         flag = " [MOCK placeholder audio]" if mock else ""
@@ -165,6 +165,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("gate", nargs="?")
     ap.add_argument("notes", nargs="?")
     ap.add_argument("--mock", action="store_true", help="placeholder audio, no API calls / credits")
+    ap.add_argument("--voice-only", action="store_true",
+                    help="audio: skip music/SFX cues whose free-library files are missing (re-mix later, voices are cached)")
     a = ap.parse_args(argv)
     try:
         if a.command in ("approve", "reject"):
@@ -180,7 +182,7 @@ def main(argv: list[str] | None = None) -> int:
         elif a.command == "lint":
             return 0 if do_lint(ep_path(a.ep)).ok else 1
         else:
-            cmd_stage(a.ep, a.command, a.mock)
+            cmd_stage(a.ep, a.command, a.mock, a.voice_only)
     except GateError as e:
         print(f"BLOCKED: {e}", file=sys.stderr)
         return 2

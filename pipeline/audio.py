@@ -23,7 +23,8 @@ def _tts_args(ev, v: dict, model_default: str):
     return text, model, v.get("settings") or {}
 
 
-def build(ep_dir: Path, root: Path, voices_cfg: dict, cues: dict, mock: bool, log=print) -> dict:
+def build(ep_dir: Path, root: Path, voices_cfg: dict, cues: dict, mock: bool, log=print,
+          skip_missing: bool = False) -> dict:
     media.need_ffmpeg()
     script = parse(ep_dir / "script.md")
     if script.errors:
@@ -48,18 +49,19 @@ def build(ep_dir: Path, root: Path, voices_cfg: dict, cues: dict, mock: bool, lo
     if not mock:
         # Zero-spend preflight: everything is checked BEFORE the first API call.
         problems = []
+        asset_problems = problems if not skip_missing else []
         if not defaults.get("generate_sfx", False):
             need = sorted({str(e.value) for e in script.events if e.kind == "sfx"
                            and not (root / "assets" / "sfx" / f"{e.value}.mp3").is_file()})
             if need:
-                problems.append("missing SFX files (generation is off): "
+                asset_problems.append("missing SFX files (generation is off): "
                                 + ", ".join(f"assets/sfx/{n}.mp3" for n in need))
         if not defaults.get("generate_music", False):
             need = sorted({str(e.value) for e in script.events if e.kind == "music"
                            and str(e.value).lower() not in MUSIC_STOP
                            and not (root / "assets" / "music" / f"{e.value}.mp3").is_file()})
             if need:
-                problems.append("missing music files (generation is off): "
+                asset_problems.append("missing music files (generation is off): "
                                 + ", ".join(f"assets/music/{n}.mp3" for n in need))
         pending = 0
         for e in script.events:
@@ -72,6 +74,8 @@ def build(ep_dir: Path, root: Path, voices_cfg: dict, cues: dict, mock: bool, lo
         if budget and pending > budget:
             problems.append(f"{pending} new TTS characters exceeds tts_char_budget ({budget}); "
                             f"wait for free credits to reset or raise the budget deliberately")
+        if skip_missing and asset_problems:
+            log("  voice-only: skipping " + "; ".join(asset_problems))
         if problems:
             raise ApiStop("preflight failed, nothing was sent to the API:\n  " + "\n  ".join(problems))
         log(f"  preflight ok: {pending} new TTS characters to render")
@@ -119,6 +123,8 @@ def build(ep_dir: Path, root: Path, voices_cfg: dict, cues: dict, mock: bool, lo
             asset = root / "assets" / "sfx" / f"{ev.value}.mp3"
             if asset.is_file():
                 src = asset
+            elif skip_missing and not mock:
+                continue
             else:
                 src = cache / f"sfx_{_key(ev.text)}.{'wav' if mock else 'mp3'}"
                 if not src.exists():
@@ -164,6 +170,8 @@ def build(ep_dir: Path, root: Path, voices_cfg: dict, cues: dict, mock: bool, lo
         end = music_marks[i + 1]["start"] if i + 1 < len(music_marks) else total
         if mk["cue"].lower() not in MUSIC_STOP and end > mk["start"]:
             segments.append((mk["cue"], mk["start"], end))
+    if skip_missing and not mock:
+        segments = [sg for sg in segments if (root / "assets" / "music" / f"{sg[0]}.mp3").is_file()]
     longest: dict[str, float] = {}
     for cue, s, e in segments:
         longest[cue] = max(longest.get(cue, 0), e - s)

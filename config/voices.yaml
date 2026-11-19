@@ -1,6 +1,8 @@
-# Voice roster. ONLY original designed voices (ElevenLabs Voice Design) are allowed.
+# Voice roster. ONLY original designed voices (ElevenLabs Voice Design, origin: designed) or
+# ElevenLabs premade stock voices (origin: stock, approved by Phillip) are allowed.
 # Never clone or imitate a real person — no actors from animated series, games or films,
-# no "sounds like ..." prompts. run.py refuses any voice whose origin is not "designed".
+# no "sounds like ..." prompts, no library/community voices of real people. run.py refuses any other
+# origin. Free plan: max 3 saved custom voices (Narrator, Gambit, Rogue); use stock voices beyond that.
 #
 # To add a character: design a voice from a description of the *character* (age, texture,
 # energy, accent), save it, paste its voice_id here. voice_id may stay null for --mock runs.
@@ -44,8 +46,8 @@ voices:
     settings: {stability: 0.4, similarity_boost: 0.75, style: 0.45}
 
   DEADPOOL:
-    origin: designed
-    voice_id: null   # to design after ep01 script approval; original voice, not modelled on any actor
+    origin: stock      # Free plan holds only 3 saved custom voices; Phillip approved a premade stock voice
+    voice_id: TX3LPaxmHKxFdv7VOQHJ   # ElevenLabs premade "Liam - Energetic, Social Media Creator"; not modelled on any actor
     design_prompt: >
       Man in his 30s, fast and motor-mouthed, slightly muffled as if speaking through a mask,
       bright mid-range tenor, gleefully self-amused, comic timing, General American accent.

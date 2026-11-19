@@ -7,8 +7,10 @@ the stages below, stop at every approval gate, and never skip one.
 1. **Retell, don't transcribe.** Narration is our own words: a condensed retelling plus
    commentary. Never copy captions or full pages of dialogue. Character voices perform only
    short key lines (< 15% of runtime), kept short. `run.py <ep> lint` enforces this.
-2. **No voice cloning of real people.** Only voices in `config/voices.yaml`, all original
-   designed voices (`origin: designed`). Never clone or imitate an actor (animated series,
+2. **No voice cloning of real people.** Only voices in `config/voices.yaml`: original designed
+   voices (`origin: designed`), or ElevenLabs premade stock voices (`origin: stock`, approved by
+   Phillip because the Free plan holds only 3 saved custom voices). Never library/community voices
+   of real people. Never clone or imitate an actor (animated series,
    games, films). If asked to, refuse and offer to tune the designed voice instead.
 3. **Panels come only from Phillip's own copies**, dropped into `episodes/<ep>/panels/`.
    Never download comic scans from the web. Panels are git-ignored — never commit them.

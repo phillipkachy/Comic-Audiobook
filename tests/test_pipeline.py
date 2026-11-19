@@ -111,7 +111,7 @@ class PipelineTest(unittest.TestCase):
         p.write_text(p.read_text() + "  CLONE:\n    origin: cloned\n")
         self.run_cli("init")
         (self.tmp / "episodes" / "ep01" / "script.md").write_text("# T\nNARRATOR: hi\n")
-        self.assertIn("origin must be 'designed'", self.run_cli("lint", ok=False).stderr)
+        self.assertIn("origin must be 'designed' or 'stock'", self.run_cli("lint", ok=False).stderr)
 
 
 if __name__ == "__main__":
