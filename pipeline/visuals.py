@@ -39,15 +39,18 @@ def build(ep_dir: Path, mock: bool = False) -> dict:
     segs = []
     for n, (img, d) in enumerate(shots):
         crop = _content_box(img)
+        frame = work / f"frame_{n:03d}.png"
         seg = work / f"shot_{n:03d}.mp4"
+        # Compose the still once (the blur is the expensive part), then loop it.
         fc = (f"[0:v]{crop}split[a][b];"
               f"[a]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
               f"boxblur=40:4,eq=brightness=-0.18:saturation=0.8[bg];"
               f"[b]scale=-2:{H - 40}[fg];"
-              f"[bg][fg]overlay=(W-w)/2:(H-h)/2,setsar=1,fps={FPS},format=yuv420p[v]")
-        media.ff("-loop", "1", "-t", f"{d:.3f}", "-i", str(img), "-filter_complex", fc, "-map", "[v]",
-                 "-c:v", "libx264", "-preset", "veryfast" if mock else "medium", "-crf", "20",
-                 "-r", str(FPS), str(seg))
+              f"[bg][fg]overlay=(W-w)/2:(H-h)/2,setsar=1[v]")
+        media.ff("-i", str(img), "-filter_complex", fc, "-map", "[v]", "-frames:v", "1", str(frame))
+        media.ff("-loop", "1", "-framerate", str(FPS), "-t", f"{d:.3f}", "-i", str(frame),
+                 "-vf", "format=yuv420p", "-c:v", "libx264", "-tune", "stillimage",
+                 "-preset", "veryfast" if mock else "medium", "-crf", "20", "-r", str(FPS), str(seg))
         segs.append(seg)
     lst = work / "segments.txt"
     lst.write_text("".join(f"file '{p.resolve()}'\n" for p in segs))
