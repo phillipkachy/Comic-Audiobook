@@ -37,7 +37,7 @@ voices:
 
   ROGUE:
     origin: designed
-    voice_id: null   # to design after ep01 script approval
+    voice_id: ODLfN4EPlasyZPYWZ28Q   # "PhillZeno - Rogue", Voice Design take 1
     design_prompt: >
       Woman in her late 20s, warm Southern US (Mississippi) accent, husky alto, confident and
       quick-witted, a teasing edge that can turn steely and commanding in an instant.
