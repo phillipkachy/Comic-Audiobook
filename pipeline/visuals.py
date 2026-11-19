@@ -31,20 +31,43 @@ def build(ep_dir: Path, mock: bool = False) -> dict:
         if not img.is_file():
             raise ValueError(f"panel missing: {img}")
 
-    work = ep_dir / "build" / "work"
+    work = ep_dir / "build" / "work" / "video"
     work.mkdir(parents=True, exist_ok=True)
-    lst = work / "panels.txt"
-    lines = []
-    for img, d in shots:
-        lines += [f"file '{img.resolve()}'", f"duration {d:.3f}"]
-    lines.append(f"file '{shots[-1][0].resolve()}'")  # concat demuxer needs the last file repeated
-    lst.write_text("\n".join(lines) + "\n")
+
+    # One segment per shot: page with black screenshot bars trimmed, fit to height,
+    # centred on a darkened, blurred copy of itself so a tall page fills the 16:9 frame.
+    segs = []
+    for n, (img, d) in enumerate(shots):
+        crop = _content_box(img)
+        seg = work / f"shot_{n:03d}.mp4"
+        fc = (f"[0:v]{crop}split[a][b];"
+              f"[a]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
+              f"boxblur=40:4,eq=brightness=-0.18:saturation=0.8[bg];"
+              f"[b]scale=-2:{H - 40}[fg];"
+              f"[bg][fg]overlay=(W-w)/2:(H-h)/2,setsar=1,fps={FPS},format=yuv420p[v]")
+        media.ff("-loop", "1", "-t", f"{d:.3f}", "-i", str(img), "-filter_complex", fc, "-map", "[v]",
+                 "-c:v", "libx264", "-preset", "veryfast" if mock else "medium", "-crf", "20",
+                 "-r", str(FPS), str(seg))
+        segs.append(seg)
+    lst = work / "segments.txt"
+    lst.write_text("".join(f"file '{p.resolve()}'\n" for p in segs))
 
     out = ep_dir / "rough_cut.mp4"
-    vf = (f"scale={W}:{H}:force_original_aspect_ratio=decrease,"
-          f"pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,fps={FPS},format=yuv420p")
     media.ff("-f", "concat", "-safe", "0", "-i", str(lst), "-i", str(mix),
-             "-vf", vf, "-map", "0:v", "-map", "1:a",
-             "-c:v", "libx264", "-preset", "veryfast" if mock else "medium", "-crf", "20",
+             "-map", "0:v", "-map", "1:a", "-c:v", "copy",
              "-c:a", "aac", "-b:a", "192k", "-t", f"{total:.3f}", "-movflags", "+faststart", str(out))
     return {"shots": len(shots), "duration_sec": round(total, 1), "resolution": f"{W}x{H}"}
+
+
+def _content_box(img: Path) -> str:
+    """crop=... filter (with trailing comma) that removes uniform black bars, or '' if none found."""
+    import re
+    import subprocess
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-loop", "1", "-t", "0.2", "-i", str(img),
+                        "-vf", "cropdetect=limit=0.06:round=2:reset=0", "-f", "null", "-"],
+                       capture_output=True, text=True)
+    m = re.findall(r"crop=(\d+):(\d+):(\d+):(\d+)", r.stderr)
+    if not m:
+        return ""
+    w, h, x, y = map(int, m[-1])
+    return f"crop={w}:{h}:{x}:{y}," if w > 100 and h > 100 else ""
