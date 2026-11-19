@@ -1,0 +1,17 @@
+# Zoom-ins for the rough cut: while a matching line plays, the camera cuts in to a region of the
+# current page (with a slow push-in), then back out to the full page.
+# match: SPEAKER + start of the line's text (case-insensitive). box: x, y, w, h as fractions of the
+# page with screenshot bars trimmed. Visual-only: editing this file does not touch the approved script.
+zooms:
+  - {page: p006.png, match: "GAMBIT: Rogue, I'm countin'",         box: [0.45, 0.33, 0.53, 0.29]}
+  - {page: p007.png, match: "DEADPOOL: Space is so dumb",          box: [0.02, 0.43, 0.32, 0.30]}
+  - {page: p008.png, match: "DEADPOOL: No, I'm here to get my egg", box: [0.45, 0.36, 0.53, 0.32]}
+  - {page: p009.png, match: "ROGUE: Oh, sonofa",                   box: [0.02, 0.70, 0.96, 0.28]}
+  - {page: p010.png, match: "GAMBIT: Do I have your permission",   box: [0.02, 0.15, 0.96, 0.28]}
+  - {page: p017.png, match: "ROGUE: China Doll",                   box: [0.03, 0.78, 0.94, 0.21]}
+  - {page: p021.png, match: "ROGUE: Wade. Don't test me",          box: [0.02, 0.32, 0.96, 0.29]}
+  - {page: p021.png, match: "DEADPOOL: But that's my favorite",    box: [0.02, 0.32, 0.96, 0.29]}
+  - {page: p021.png, match: "GAMBIT: This is the honeymoon",       box: [0.02, 0.32, 0.96, 0.29]}
+  - {page: p022.png, match: "DEADPOOL: That is so much better",    box: [0.02, 0.02, 0.96, 0.21]}
+  # Narration beat: the girl's "Help me?" moment.
+  - {page: p022.png, match: "NARRATOR: Light pours out",           box: [0.08, 0.22, 0.84, 0.50]}

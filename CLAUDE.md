@@ -61,6 +61,12 @@ SFX: card shuffle, crisp          <- assets/sfx/<slug>.mp3 (slug = text before f
 ```
 Delivery hints in parentheses are passed to the voice model as direction (inline tags on `eleven_v3`).
 
+## Zooms (episodes/<ep>/zooms.yaml)
+Every character line gets a zoom: while the line plays, the video cuts in to that panel with a slow
+push-in, then back to the full page. Entries match a line by `SPEAKER: start of text` and give the
+panel's box as fractions of the page (black screenshot bars trimmed). Narration beats may get zooms
+too. It's visual-only, so editing it doesn't make the script approval stale.
+
 ## Environment
 - `ELEVENLABS_API_KEY` must be set for real audio. `--mock` needs no key and spends nothing.
 - Requires ffmpeg, Python 3.10+, `pip install -r requirements.txt`.
